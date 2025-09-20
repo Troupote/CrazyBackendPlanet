@@ -1,85 +1,140 @@
-﻿using PlaygroundDatabase.Interfaces;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using PlaygroundDatabase.Configuration;
+using PlaygroundDatabase.Interfaces;
 using PlaygroundDatabase.Services;
 
 namespace PlaygroundDatabase.Factories;
 
 /// <summary>
-/// Factory to create and configure all application services
+/// Advanced service factory with proper dependency injection container
+/// Manages the complete application lifecycle and service configuration
 /// </summary>
 public class ServiceFactory : IDisposable
 {
-    private readonly HttpClient _httpClient;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IHost _host;
     private bool _disposed = false;
 
     public ServiceFactory()
     {
-        _httpClient = new HttpClient();
+        _host = CreateHost();
+        _serviceProvider = _host.Services;
     }
 
     /// <summary>
-    /// Creates a complete application instance with all configured services
+    /// Creates and configures the application host with all services
+    /// </summary>
+    private static IHost CreateHost()
+    {
+        return Host.CreateDefaultBuilder()
+            .ConfigureServices((context, services) =>
+            {
+                // Core infrastructure
+                services.AddHttpClient<IDatabaseService, DatabaseService>(client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(30);
+                    client.DefaultRequestHeaders.Add("Accept", "application/json");
+                });
+
+                // Logging and configuration
+                services.AddSingleton<ILogService, LogService>();
+                services.AddSingleton<ConfigurationService>();
+                services.AddSingleton<ResilienceService>();
+
+                // Configuration binding
+                services.AddSingleton(serviceProvider =>
+                {
+                    var configService = serviceProvider.GetRequiredService<ConfigurationService>();
+                    return configService.GetTursoConfiguration();
+                });
+
+                // Business services with proper lifetimes
+                services.AddScoped<IDatabaseService, DatabaseService>();
+                services.AddScoped<IExchangeService, ExchangeService>();
+                services.AddScoped<DisplayService>();
+                services.AddScoped<ApplicationService>();
+
+                // Health checks for production readiness
+                services.AddHealthChecks()
+                    .AddCheck<DatabaseHealthCheck>("database", timeout: TimeSpan.FromSeconds(10))
+                    .AddCheck("memory", () =>
+                    {
+                        var memoryUsage = GC.GetTotalMemory(false);
+                        var memoryInMB = memoryUsage / (1024 * 1024);
+
+                        return memoryInMB > 500
+                            ? Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Unhealthy($"Memory usage too high: {memoryInMB}MB")
+                            : Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy($"Memory usage normal: {memoryInMB}MB");
+                    });
+
+                // Enhanced logging with structured logging
+                services.AddLogging(builder =>
+                {
+                    builder.ClearProviders();
+                    builder.AddConsole(options =>
+                    {
+                        options.IncludeScopes = true;
+                        options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
+                    });
+                    builder.AddDebug();
+                    builder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
+                });
+            })
+            .Build();
+    }
+
+    /// <summary>
+    /// Creates the main application service with all dependencies resolved
     /// </summary>
     public ApplicationService CreateApplication()
     {
-        // Create services in dependency order
-        var logService = CreateLogService();
-        var configurationService = CreateConfigurationService(logService);
-        var databaseService = CreateDatabaseService(configurationService, logService);
-        var exchangeService = CreateExchangeService(databaseService, logService);
-        var displayService = CreateDisplayService(logService);
-
-        return new ApplicationService(
-            databaseService,
-            exchangeService,
-            logService,
-            displayService,
-            configurationService);
+        try
+        {
+            return _serviceProvider.GetRequiredService<ApplicationService>();
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("Failed to create application service. Check your configuration and dependencies.", ex);
+        }
     }
 
     /// <summary>
-    /// Creates the logging service
+    /// Gets a service by type - useful for testing and advanced scenarios
     /// </summary>
-    public ILogService CreateLogService()
+    public T GetService<T>() where T : class
     {
-        return new LogService();
+        return _serviceProvider.GetRequiredService<T>();
     }
 
     /// <summary>
-    /// Creates the configuration service
+    /// Starts the application host
     /// </summary>
-    public ConfigurationService CreateConfigurationService(ILogService logService)
+    public async Task StartAsync(CancellationToken cancellationToken = default)
     {
-        return new ConfigurationService(logService);
+        await _host.StartAsync(cancellationToken);
     }
 
     /// <summary>
-    /// Creates the database service
+    /// Stops the application host gracefully
     /// </summary>
-    public IDatabaseService CreateDatabaseService(ConfigurationService configurationService, ILogService logService)
+    public async Task StopAsync(CancellationToken cancellationToken = default)
     {
-        var tursoConfig = configurationService.GetTursoConfiguration();
-        return new DatabaseService(_httpClient, tursoConfig, logService);
+        await _host.StopAsync(cancellationToken);
     }
 
     /// <summary>
-    /// Creates the exchange management service
+    /// Gets health check results for monitoring
     /// </summary>
-    public IExchangeService CreateExchangeService(IDatabaseService databaseService, ILogService logService)
+    public async Task<string> GetHealthStatusAsync()
     {
-        return new ExchangeService(databaseService, logService);
+        var healthCheckService = _serviceProvider.GetRequiredService<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckService>();
+        var result = await healthCheckService.CheckHealthAsync();
+
+        return $"Status: {result.Status}, Duration: {result.TotalDuration.TotalMilliseconds}ms";
     }
 
-    /// <summary>
-    /// Creates the display service
-    /// </summary>
-    public DisplayService CreateDisplayService(ILogService logService)
-    {
-        return new DisplayService(logService);
-    }
-
-    /// <summary>
-    /// Releases resources
-    /// </summary>
     public void Dispose()
     {
         Dispose(true);
@@ -90,7 +145,7 @@ public class ServiceFactory : IDisposable
     {
         if (!_disposed && disposing)
         {
-            _httpClient?.Dispose();
+            _host?.Dispose();
             _disposed = true;
         }
     }
