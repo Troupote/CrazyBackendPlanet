@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
-using PlaygroundDatabase.Configuration;
-using PlaygroundDatabase.Enums;
-using PlaygroundDatabase.Interfaces;
+using TursoConnector.Configuration;
+using TursoConnector.Enums;
+using TursoConnector.Interfaces;
 
-namespace PlaygroundDatabase.Services;
+namespace TursoConnector.Services;
 
 /// <summary>
 /// Service for managing application configuration

@@ -1,7 +1,7 @@
-﻿using PlaygroundDatabase.Interfaces;
-using PlaygroundDatabase.Models.Business;
+﻿using TursoConnector.Interfaces;
+using TursoConnector.Models.Business;
 
-namespace PlaygroundDatabase.Services;
+namespace TursoConnector.Services;
 
 /// <summary>
 /// Service for displaying data in the console

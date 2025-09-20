@@ -1,6 +1,6 @@
-﻿using PlaygroundDatabase.Models.Turso;
+﻿using TursoConnector.Models.Turso;
 
-namespace PlaygroundDatabase.Interfaces;
+namespace TursoConnector.Interfaces;
 
 /// <summary>
 /// Interface for database operations

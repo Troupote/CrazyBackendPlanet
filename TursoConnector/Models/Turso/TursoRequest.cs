@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace PlaygroundDatabase.Models.Turso;
+namespace TursoConnector.Models.Turso;
 
 /// <summary>
 /// Main request for Turso API

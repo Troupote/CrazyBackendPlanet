@@ -1,11 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using PlaygroundDatabase.Configuration;
-using PlaygroundDatabase.Interfaces;
-using PlaygroundDatabase.Services;
+using TursoConnector.Configuration;
+using TursoConnector.Interfaces;
+using TursoConnector.Services;
 
-namespace PlaygroundDatabase.Factories;
+namespace TursoConnector.Factories;
 
 /// <summary>
 /// Advanced service factory with proper dependency injection container

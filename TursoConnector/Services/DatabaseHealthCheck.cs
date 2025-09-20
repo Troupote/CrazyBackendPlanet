@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Diagnostics.HealthChecks;
-using PlaygroundDatabase.Interfaces;
+using TursoConnector.Interfaces;
 
-namespace PlaygroundDatabase.Services;
+namespace TursoConnector.Services;
 
 /// <summary>
 /// Health check for database connectivity

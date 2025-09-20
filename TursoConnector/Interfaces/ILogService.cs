@@ -1,6 +1,6 @@
-﻿using PlaygroundDatabase.Enums;
+﻿using TursoConnector.Enums;
 
-namespace PlaygroundDatabase.Interfaces;
+namespace TursoConnector.Interfaces;
 
 /// <summary>
 /// Interface for logging service

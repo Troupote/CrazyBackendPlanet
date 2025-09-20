@@ -1,6 +1,6 @@
-﻿using PlaygroundDatabase.Interfaces;
+﻿using TursoConnector.Interfaces;
 
-namespace PlaygroundDatabase.Services;
+namespace TursoConnector.Services;
 
 /// <summary>
 /// Simplified resilience service with basic retry logic

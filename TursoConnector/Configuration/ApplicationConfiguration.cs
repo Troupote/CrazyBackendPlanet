@@ -1,4 +1,4 @@
-﻿namespace PlaygroundDatabase.Configuration;
+﻿namespace TursoConnector.Configuration;
 
 /// <summary>
 /// Advanced application configuration with environment-specific settings

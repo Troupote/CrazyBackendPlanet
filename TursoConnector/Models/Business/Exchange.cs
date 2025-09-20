@@ -1,4 +1,4 @@
-﻿namespace PlaygroundDatabase.Models.Business;
+﻿namespace TursoConnector.Models.Business;
 
 /// <summary>
 /// Model representing an exchange between two players

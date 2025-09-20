@@ -1,6 +1,6 @@
-﻿using PlaygroundDatabase.Models.Business;
+﻿using TursoConnector.Models.Business;
 
-namespace PlaygroundDatabase.Interfaces;
+namespace TursoConnector.Interfaces;
 
 /// <summary>
 /// Interface for exchange management service

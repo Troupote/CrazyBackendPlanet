@@ -1,7 +1,8 @@
-﻿using PlaygroundDatabase.Factories;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using TursoConnector.Factories;
+using TursoConnector.Services;
 
-namespace PlaygroundDatabase;
+namespace TursoConnector;
 
 class Program
 {
@@ -37,7 +38,7 @@ class Program
             Console.WriteLine($"Health: {finalHealth}");
 
             // Get database metrics if available
-            var databaseService = serviceFactory.GetService<PlaygroundDatabase.Services.DatabaseService>();
+            var databaseService = serviceFactory.GetService<DatabaseService>();
             var metrics = databaseService.GetMetrics();
             Console.WriteLine($"Database Metrics:");
             Console.WriteLine($"  - Cached Queries: {metrics.CachedQueriesCount}");

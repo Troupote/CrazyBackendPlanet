@@ -1,4 +1,4 @@
-﻿namespace PlaygroundDatabase.Configuration;
+﻿namespace TursoConnector.Configuration;
 
 /// <summary>
 /// Configuration for Turso connection

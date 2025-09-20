@@ -1,8 +1,8 @@
-﻿using PlaygroundDatabase.Interfaces;
-using PlaygroundDatabase.Models.Business;
-using PlaygroundDatabase.Services;
+﻿using TursoConnector.Services;
+using TursoConnector.Interfaces;
+using TursoConnector.Models.Business;
 
-namespace PlaygroundDatabase.Services;
+namespace TursoConnector.Services;
 
 /// <summary>
 /// Main application service that orchestrates all other services

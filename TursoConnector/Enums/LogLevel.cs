@@ -1,4 +1,4 @@
-﻿namespace PlaygroundDatabase.Enums;
+﻿namespace TursoConnector.Enums;
 
 /// <summary>
 /// Enum for log levels

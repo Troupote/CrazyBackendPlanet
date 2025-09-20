@@ -1,8 +1,8 @@
-﻿using PlaygroundDatabase.Interfaces;
-using PlaygroundDatabase.Models.Business;
-using PlaygroundDatabase.Models.Turso;
+﻿using TursoConnector.Interfaces;
+using TursoConnector.Models.Business;
+using TursoConnector.Models.Turso;
 
-namespace PlaygroundDatabase.Services;
+namespace TursoConnector.Services;
 
 /// <summary>
 /// Service for managing card exchanges

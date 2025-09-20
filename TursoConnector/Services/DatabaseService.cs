@@ -1,10 +1,10 @@
 ﻿using System.Text;
 using System.Text.Json;
-using PlaygroundDatabase.Configuration;
-using PlaygroundDatabase.Interfaces;
-using PlaygroundDatabase.Models.Turso;
+using TursoConnector.Configuration;
+using TursoConnector.Interfaces;
+using TursoConnector.Models.Turso;
 
-namespace PlaygroundDatabase.Services;
+namespace TursoConnector.Services;
 
 /// <summary>
 /// Production-ready database service with enhanced error handling and resilience
