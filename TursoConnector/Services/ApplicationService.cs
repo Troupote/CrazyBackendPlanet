@@ -36,8 +36,6 @@ public class ApplicationService
     {
         try
         {
-            _displayService.DisplayWelcomeMessage();
-
             // Configure log level
             var logLevel = _configurationService.GetLogLevel();
             _logService.SetLogLevel(logLevel);
@@ -73,7 +71,7 @@ public class ApplicationService
     /// </summary>
     private async Task InitializeDatabaseAsync()
     {
-        _logService.LogInfo("🔧 Initializing database...");
+        _logService.LogWork("Initializing database...");
 
         var success = await _exchangeService.CreateExchangeTableAsync();
         if (!success)
@@ -87,7 +85,7 @@ public class ApplicationService
     /// </summary>
     private async Task InsertTestDataAsync()
     {
-        _logService.LogInfo("📝 Inserting test data...");
+        _logService.LogWork("Inserting test data...");
 
         var testExchange = new Exchange
         {
@@ -106,7 +104,7 @@ public class ApplicationService
     /// </summary>
     private async Task DisplayAllExchangesAsync()
     {
-        _logService.LogInfo("📊 Retrieving data...");
+        _logService.LogWork("Retrieving exchange data...");
 
         var exchanges = await _exchangeService.GetAllExchangesAsync();
         _displayService.DisplayExchanges(exchanges);
@@ -125,6 +123,8 @@ public class ApplicationService
     /// </summary>
     public async Task<bool> AddExchangeAsync(string opener, string follower, string openerCard, string followerCard)
     {
+        _logService.LogWork($"Adding new exchange: {opener} <-> {follower}");
+
         var exchange = new Exchange
         {
             RequestOpener = opener,

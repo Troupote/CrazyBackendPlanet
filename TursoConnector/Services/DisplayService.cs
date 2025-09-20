@@ -22,20 +22,16 @@ public class DisplayService
     {
         if (!exchanges.Any())
         {
-            _logService.LogInfo("No data found in ExchangeTable.");
+            _logService.LogWork("No exchange data found");
             return;
         }
 
-        Console.WriteLine("\n📋 Data in ExchangeTable:");
-        Console.WriteLine(new string('=', 80));
+        _logService.LogWork($"Found {exchanges.Count} exchange(s) in database:");
 
         foreach (var exchange in exchanges)
         {
-            Console.WriteLine(exchange.ToString());
+            _logService.LogWork($"  → {exchange}");
         }
-
-        Console.WriteLine(new string('=', 80));
-        Console.WriteLine($"Total: {exchanges.Count} exchange(s)");
     }
 
     /// <summary>
@@ -43,10 +39,7 @@ public class DisplayService
     /// </summary>
     public void DisplayExchange(Exchange exchange)
     {
-        Console.WriteLine("\n📄 Exchange details:");
-        Console.WriteLine(new string('-', 50));
-        Console.WriteLine(exchange.ToString());
-        Console.WriteLine(new string('-', 50));
+        _logService.LogWork($"Exchange details: {exchange}");
     }
 
     /// <summary>
@@ -54,8 +47,7 @@ public class DisplayService
     /// </summary>
     public void DisplayWelcomeMessage()
     {
-        Console.WriteLine("🚀 Krazy Planet Survivor - Exchange Manager");
-        Console.WriteLine(new string('=', 50));
+        // Removed welcome message for Work mode - only essential logs
     }
 
     /// <summary>
@@ -65,12 +57,11 @@ public class DisplayService
     {
         if (isConnected)
         {
-            _logService.LogInfo($"✅ Connection to Turso established successfully!");
-            _logService.LogInfo($"🔗 Database: {MaskSensitiveUrl(databaseUrl)}");
+            _logService.LogWork($"Database connected: {MaskSensitiveUrl(databaseUrl)}");
         }
         else
         {
-            _logService.LogError("❌ Failed to connect to Turso");
+            _logService.LogError("Failed to connect to database");
         }
     }
 

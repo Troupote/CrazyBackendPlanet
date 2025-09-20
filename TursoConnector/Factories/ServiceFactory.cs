@@ -73,13 +73,8 @@ public class ServiceFactory : IDisposable
                 services.AddLogging(builder =>
                 {
                     builder.ClearProviders();
-                    builder.AddConsole(options =>
-                    {
-                        options.IncludeScopes = true;
-                        options.TimestampFormat = "[yyyy-MM-dd HH:mm:ss] ";
-                    });
-                    builder.AddDebug();
-                    builder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
+                    // Completely disable Microsoft logging to avoid system logs
+                    builder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.None);
                 });
             })
             .Build();

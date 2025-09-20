@@ -100,7 +100,7 @@ public class DatabaseService : IDatabaseService
             {
                 var responseJson = await response.Content.ReadAsStringAsync();
                 _logService.LogDebug($"JSON response received: {responseJson}");
-                _logService.LogInfo("✅ Query executed successfully with resilience");
+                _logService.LogInfo("Query executed successfully with resilience");
 
                 var result = JsonSerializer.Deserialize<TursoResponse>(responseJson);
 
@@ -141,11 +141,11 @@ public class DatabaseService : IDatabaseService
 
             if (isHealthy)
             {
-                _logService.LogInfo("✅ Database connection test successful");
+                _logService.LogInfo("Database connection test successful");
             }
             else
             {
-                _logService.LogError("❌ Database connection test failed - no results returned");
+                _logService.LogError("Database connection test failed - no results returned");
             }
 
             return isHealthy;

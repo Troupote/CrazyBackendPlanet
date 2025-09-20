@@ -26,6 +26,12 @@ public interface ILogService
     void LogDebug(string message);
 
     /// <summary>
+    /// Logs a work logic message (displayed only if LogLevel.Work or LogLevel.Complete)
+    /// </summary>
+    /// <param name="message">The work logic message to log</param>
+    void LogWork(string message);
+
+    /// <summary>
     /// Logs an error message
     /// </summary>
     /// <param name="message">The error message to log</param>

@@ -13,5 +13,10 @@ public enum LogLevel
     /// <summary>
     /// Display normal messages + raw JSON data
     /// </summary>
-    Complete
+    Complete,
+
+    /// <summary>
+    /// Display only work logic and errors, no debug/info from other services
+    /// </summary>
+    Work
 }
