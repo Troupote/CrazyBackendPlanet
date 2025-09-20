@@ -53,7 +53,7 @@ public class ServiceFactory : IDisposable
                 // Business services with proper lifetimes
                 services.AddScoped<IDatabaseService, DatabaseService>();
                 services.AddScoped<IExchangeService, ExchangeService>();
-                services.AddScoped<DisplayService>();
+                services.AddSingleton<INatsService, NatsService>();
                 services.AddScoped<ApplicationService>();
 
                 // Health checks for production readiness

@@ -4,11 +4,11 @@ using TursoConnector.Services;
 
 namespace TursoConnector;
 
-class Program
+public class Program
 {
-    static async Task Main()
+    public static async Task Main(string[] args)
     {
-        // Use advanced Factory pattern with proper lifecycle management
+        // Normal NATS service startup
         using var serviceFactory = new ServiceFactory();
 
         try

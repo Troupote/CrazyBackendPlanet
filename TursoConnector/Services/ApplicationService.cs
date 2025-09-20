@@ -5,32 +5,32 @@ using TursoConnector.Models.Business;
 namespace TursoConnector.Services;
 
 /// <summary>
-/// Main application service that orchestrates all other services
+/// Main application service that orchestrates NATS messaging and database operations
 /// </summary>
 public class ApplicationService
 {
     private readonly IDatabaseService _databaseService;
     private readonly IExchangeService _exchangeService;
     private readonly ILogService _logService;
-    private readonly DisplayService _displayService;
+    private readonly INatsService _natsService;
     private readonly ConfigurationService _configurationService;
 
     public ApplicationService(
         IDatabaseService databaseService,
         IExchangeService exchangeService,
         ILogService logService,
-        DisplayService displayService,
+        INatsService natsService,
         ConfigurationService configurationService)
     {
         _databaseService = databaseService ?? throw new ArgumentNullException(nameof(databaseService));
         _exchangeService = exchangeService ?? throw new ArgumentNullException(nameof(exchangeService));
         _logService = logService ?? throw new ArgumentNullException(nameof(logService));
-        _displayService = displayService ?? throw new ArgumentNullException(nameof(displayService));
+        _natsService = natsService ?? throw new ArgumentNullException(nameof(natsService));
         _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
     }
 
     /// <summary>
-    /// Starts the application
+    /// Starts the NATS messaging service
     /// </summary>
     public async Task RunAsync()
     {
@@ -40,74 +40,72 @@ public class ApplicationService
             var logLevel = _configurationService.GetLogLevel();
             _logService.SetLogLevel(logLevel);
 
-            // Test connection
+            // Test database connection
             var tursoConfig = _configurationService.GetTursoConfiguration();
             var isConnected = await _databaseService.TestConnectionAsync();
-            _displayService.DisplayConnectionInfo(isConnected, tursoConfig.DatabaseUrl);
 
             if (!isConnected)
             {
-                _logService.LogError("Cannot continue without database connection.");
+                _logService.LogError("Cannot start NATS service without database connection");
                 return;
             }
 
-            // Initialize database
-            //await InitializeDatabaseAsync();
+            _logService.LogWork($"Database connected: {tursoConfig.DatabaseUrl}");
 
-            // Insert test data (optional)
-            //await InsertTestDataAsync();
+            // Check NATS connection
+            if (!_natsService.IsConnected)
+            {
+                _logService.LogError("NATS connection not available");
+                return;
+            }
 
-            // Display data
-            await DisplayAllExchangesAsync();
+            _logService.LogWork("Starting NATS messaging service for game communication...");
+
+            // Start listening for game messages (this will run indefinitely)
+            using var cts = new CancellationTokenSource();
+
+            // Handle shutdown gracefully
+            Console.CancelKeyPress += (sender, e) => {
+                e.Cancel = true;
+                _logService.LogWork("Shutdown requested...");
+                cts.Cancel();
+            };
+
+            await _natsService.StartListeningAsync(cts.Token);
+
+
+        }
+        catch (OperationCanceledException)
+        {
+            _logService.LogWork("Service shutdown requested");
         }
         catch (Exception ex)
         {
-            _logService.LogError($"Error during application execution: {ex.Message}");
+            _logService.LogError($"Error during NATS service execution: {ex.Message}");
+        }
+        finally
+        {
+            await _natsService.StopAsync();
+            _logService.LogWork("NATS messaging service stopped");
         }
     }
 
     /// <summary>
-    /// Initializes the database (creates tables)
+    /// Initializes the database (creates tables) - utility method
     /// </summary>
-    private async Task InitializeDatabaseAsync()
+    public async Task<bool> InitializeDatabaseAsync()
     {
         _logService.LogWork("Initializing database...");
 
         var success = await _exchangeService.CreateExchangeTableAsync();
         if (!success)
         {
-            throw new InvalidOperationException("Database initialization failed");
+            _logService.LogError("Database initialization failed");
+            return false;
         }
-    }
 
-    /// <summary>
-    /// Inserts test data
-    /// </summary>
-    private async Task InsertTestDataAsync()
-    {
-        _logService.LogWork("Inserting test data...");
-
-        var testExchange = new Exchange
-        {
-            RequestOpener = "Crazy caca Niels",
-            RequestFollower = "crazy caca tibo",
-            OpenerCard = "krazy player1",
-            FollowerCard = "krazy player2",
-            Date = DateTime.Now
-        };
-
-        await _exchangeService.InsertExchangeAsync(testExchange);
-    }
-
-    /// <summary>
-    /// Displays all exchanges
-    /// </summary>
-    private async Task DisplayAllExchangesAsync()
-    {
-        _logService.LogWork("Retrieving exchange data...");
-
-        var exchanges = await _exchangeService.GetAllExchangesAsync();
-        _displayService.DisplayExchanges(exchanges);
+        _logService.LogWork("Database initialized successfully");
+        return true;
     }
 
     /// <summary>
@@ -119,7 +117,7 @@ public class ApplicationService
     }
 
     /// <summary>
-    /// Adds a new exchange
+    /// Adds a new exchange (utility method)
     /// </summary>
     public async Task<bool> AddExchangeAsync(string opener, string follower, string openerCard, string followerCard)
     {
@@ -131,7 +129,7 @@ public class ApplicationService
             RequestFollower = follower,
             OpenerCard = openerCard,
             FollowerCard = followerCard,
-            Date = DateTime.Now
+            Date = DateTime.UtcNow
         };
 
         return await _exchangeService.InsertExchangeAsync(exchange);
