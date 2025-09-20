@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendKrazyPlanetSurvivor", "BackendKrazyPlanetSurvivor\BackendKrazyPlanetSurvivor.csproj", "{F2754E47-F72D-4662-9C6D-E24BFCF5F42C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NatsPlayground", "NatsPlayground\NatsPlayground.csproj", "{F2754E47-F72D-4662-9C6D-E24BFCF5F42C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TursoConnector", "TursoConnector\TursoConnector.csproj", "{5EA57EBC-DD6A-46F1-A092-1DA656C36A30}"
 EndProject

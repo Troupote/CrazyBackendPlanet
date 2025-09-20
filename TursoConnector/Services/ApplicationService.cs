@@ -54,10 +54,10 @@ public class ApplicationService
             }
 
             // Initialize database
-            await InitializeDatabaseAsync();
+            //await InitializeDatabaseAsync();
 
             // Insert test data (optional)
-            await InsertTestDataAsync();
+            //await InsertTestDataAsync();
 
             // Display data
             await DisplayAllExchangesAsync();

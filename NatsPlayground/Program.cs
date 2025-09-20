@@ -2,7 +2,7 @@
 using System;
 using System.Threading;
 
-namespace BackendKrazyPlanetSurvivor;
+namespace NatsPlayground;
 
 class Program
 {

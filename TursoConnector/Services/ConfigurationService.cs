@@ -31,8 +31,8 @@ public class ConfigurationService
     {
         var config = new TursoConfiguration
         {
-            DatabaseUrl = _configuration["Turso:DatabaseUrl"] ?? string.Empty,
-            AuthToken = _configuration["Turso:AuthToken"] ?? string.Empty
+            DatabaseUrl = _configuration["Tibo:DatabaseUrl"] ?? string.Empty,
+            AuthToken = _configuration["Tibo:AuthToken"] ?? string.Empty
         };
 
         if (!config.IsValid)
